@@ -1,11 +1,16 @@
 #include "readfile.h"
-
+#include <math.h>
 /* Hash function to choose bucket
  * Input: key used to calculate the hash
  * Output: HashValue;
  */
 int hashCode(int key){
    return key % MBUCKETS;
+}
+
+int hashCode2(int key) {
+    float A = 0.6180339887; // Fractional part of the golden ratio
+    return floor(MBUCKETS * (key * A - floor(key * A)));
 }
 /* Functionality insert the data item into the correct position
  *          1. use the hash function to determine which bucket to insert into
@@ -32,8 +37,10 @@ int hashCode(int key){
 int insertItem(int fd,DataItem item){
    //TODO: implement this function
 	int hashIndex=hashCode(item.key);
+    int hashIndex2=hashCode2(hashIndex);
 	int startingOffset = hashIndex*sizeof(Bucket);
 	int rewind=0;
+    bool flagChance=true;
 	int Offset = startingOffset;
 	DataItem data;
 	int NumberOfAccesses=0;
@@ -48,6 +55,11 @@ int insertItem(int fd,DataItem item){
 			return NumberOfAccesses;
 		}
 		else {
+            if(flagChance){
+                flagChance=false;
+                Offset=hashIndex2*sizeof(Bucket);
+                goto RESEEK;
+            }
 			Offset +=sizeof(DataItem);  //move the offset to next record
     		if(Offset >= FILESIZE && rewind ==0 )
     		 { //if reached end of the file start again
@@ -83,9 +95,10 @@ int searchItem(int fd,struct DataItem* item,int *count)
 	*count = 0;				//No of accessed records
 	int rewind = 0;			//A flag to start searching from the first bucket
 	int hashIndex = hashCode(item->key);  				//calculate the Bucket index
-	int startingOffset = hashIndex*sizeof(Bucket);		//calculate the starting address of the bucket
+	int hashIndex2=hashCode2(hashIndex);
+    int startingOffset = hashIndex*sizeof(Bucket);		//calculate the starting address of the bucket
 	int Offset = startingOffset;						//Offset variable which we will use to iterate on the db
-
+    bool flag=true;
 	//Main Loop
 	RESEEK:
 	//on the linux terminal use man pread to check the function manual
@@ -103,6 +116,11 @@ int searchItem(int fd,struct DataItem* item,int *count)
     			return Offset;
 
     } else { //not the record I am looking for
+            if(flag){
+                flag=false;
+                Offset=hashIndex2*sizeof(Bucket);
+                goto RESEEK;
+            }
     		Offset +=sizeof(DataItem);  //move the offset to next record
     		if(Offset >= FILESIZE && rewind ==0 )
     		 { //if reached end of the file start again
@@ -116,6 +134,8 @@ int searchItem(int fd,struct DataItem* item,int *count)
     		goto RESEEK;
     }
 }
+
+
 /* Functionality: Display all the file contents
  *
  * Input:  fd: filehandler which contains the db

@@ -16,8 +16,8 @@
 #include <stdio.h>
 
 
-#define MBUCKETS  10					//Number of BUCKETS
-#define RECORDSPERBUCKET 2				//No. of records inside each Bucket
+#define MBUCKETS  10			//Number of BUCKETS
+#define RECORDSPERBUCKET 1			//No. of records inside each Bucket
 #define BUCKETSIZE sizeof(Bucket)		//Size of the bucket (in bytes)
 #define FILESIZE BUCKETSIZE*MBUCKETS    //Size of the file 
 
@@ -27,13 +27,13 @@ struct DataItem {
    int valid;    //) means invalid record, 1 = valid record
    int data;     
    int key;
+   int Offset =-1;        // for chaining
 };
 
 
 //Each bucket contains number of records
 struct Bucket {
 	struct DataItem  dataItem[RECORDSPERBUCKET];
-
 };
 
 //Check the create File

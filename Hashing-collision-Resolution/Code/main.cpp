@@ -45,7 +45,7 @@ int main(){
 //here we create a sample test to read and write to our database file
 
   //1. Create Database file or Open it if it already exists, check readfile.cpp
-   filehandle = createFile(FILESIZE,const_cast<char*>("openaddressing"));
+   filehandle = createFile(FILESIZE,"openaddressing");
   //2. Display the database file, check openAddressing.cpp
    DisplayFile(filehandle);
 
@@ -74,13 +74,14 @@ int main(){
    DisplayFile(filehandle);
 
    //5. Search the database
-   search(13);
+   search(71);
 
    //6. delete an item from the database
-   deleteItem(31);
+   deleteItem(1);
 
    //7. Display the final data base
    DisplayFile(filehandle);
+
    // And Finally don't forget to close the file.
    close(filehandle);
    return 0;
@@ -99,7 +100,7 @@ void insert(int key,int data){
      item.data = data;
      item.key = key;
      item.valid = 1;
-     int result= insertItem(filehandle,item);  // TODO: implement this function in openAddressing.cpp
+     int result= insertItem(filehandle,item);  //TODO: implement this function in openAddressing.cpp
      printf("Insert: No. of searched records:%d\n",abs(result));
 }
 
