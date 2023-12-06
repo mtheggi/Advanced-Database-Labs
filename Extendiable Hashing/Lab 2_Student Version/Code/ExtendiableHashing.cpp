@@ -271,7 +271,14 @@ int insertItem(DataItem data, Bucket& currentBucket, GlobalDirectory& globaldire
 // Hint1:   use findItemInBucket & getCurrentHash functions
 
 void searchItem(int key, Bucket& currentBucket, GlobalDirectory& globaldirectory) {
-
+	if(globaldirectory.globalDepth==0){
+		findItemInBucket(currentBucket,key);
+	}
+	else{
+		int HashedKey=getCurrentHash(key,globaldirectory.globalDepth); //get the new key
+		Bucket * CurrBucket=globaldirectory.entry[HashedKey];          //get bucket pointer
+		findItemInBucket(*CurrBucket,key);
+	}
 }
 
 //TODO6: Implement this function, Don't change the interface please
