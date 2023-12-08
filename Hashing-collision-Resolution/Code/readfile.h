@@ -16,6 +16,8 @@
 #include <stdio.h>
 
 
+
+
 #define MBUCKETS  10			//Number of BUCKETS
 #define RECORDSPERBUCKET 2			//No. of records inside each Bucket
 #define BUCKETSIZE sizeof(Bucket)		//Size of the bucket (in bytes)
@@ -27,13 +29,14 @@ struct DataItem {
    int valid;    //) means invalid record, 1 = valid record
    int data;     
    int key;
-   int Offset =-1;        // for chaining
 };
 
 
 //Each bucket contains number of records
-struct Bucket {
+struct Bucket 
+{
 	struct DataItem  dataItem[RECORDSPERBUCKET];
+    int Bptr=-1;
 };
 
 //Check the create File
@@ -42,6 +45,7 @@ int createFile(int size, char *);
 //check the openAddressing File
 int deleteItem(int key);
 int insertItem(int fd,DataItem item);
+int insertItemChainig(int fd,DataItem item);
 int DisplayFile(int fd);
 int deleteOffset(int filehandle, int Offset);
 int searchItem(int filehandle,struct DataItem* item,int *count);
