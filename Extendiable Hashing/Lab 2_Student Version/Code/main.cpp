@@ -47,15 +47,14 @@ int main() {
     cout << "--------------------test here" << endl;    
     insertItem(DataItem(112, 54), initialFile, globalDirectory);
     insertItem(DataItem(240, 16), initialFile, globalDirectory);
-	insertItem(DataItem(241, 99), initialFile, globalDirectory);
+    insertItem(DataItem(241, 99), initialFile, globalDirectory);
     displayDirectory(globalDirectory, initialFile, 0);
 	cout.flush();
-    //============================================================
+    // //============================================================
 	insertItem(DataItem(159, 30), initialFile, globalDirectory);
 	displayDirectory(globalDirectory, initialFile, 0);
     cout.flush();
 	//============================================================
-
     insertItem(DataItem(14, 45), initialFile, globalDirectory);
     insertItem(DataItem(13, 88), initialFile, globalDirectory);
     displayDirectory(globalDirectory, initialFile, 0);

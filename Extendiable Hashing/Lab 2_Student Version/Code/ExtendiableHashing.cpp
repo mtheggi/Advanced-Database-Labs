@@ -128,8 +128,11 @@ int getCurrentHash(int key, int depth) {
 
 int insertItemIntoBucket(Bucket& currentBucket, DataItem data)
 {
-	if (currentBucket.currentEntries == RECORDSPERBUCKET)
-		return 0; // can not insert because bucket is full i should split; 
+	if (currentBucket.currentEntries == RECORDSPERBUCKET){
+		puts("FULL");
+		return 0;
+	}
+		 
 	else {
 
 		for (int i = 0; i < RECORDSPERBUCKET; i++) {
@@ -225,6 +228,7 @@ int insertItem(DataItem data, Bucket& currentBucket, GlobalDirectory& globaldire
 	}
 	// complete the rest of the function ....
 	int bucketindex = getCurrentHash(data.key, globaldirectory.globalDepth);
+	printf("Want to insert %d \n",data.data);
 	if (insertItemIntoBucket(*globaldirectory.entry[bucketindex], data) == 0){
 		// extending 
 		if (globaldirectory.entry[bucketindex]->localDepth == globaldirectory.globalDepth) {
@@ -245,7 +249,8 @@ int insertItem(DataItem data, Bucket& currentBucket, GlobalDirectory& globaldire
 				SplitBucket(globaldirectory, bucketindex);
 				for(int i =0 ;i < RECORDSPERBUCKET ; i++) {	
 					DataItem temp = globaldirectory.entry[bucketindex]->dataItem[i];
-					globaldirectory.entry[bucketindex]->dataItem[i].valid = 0; // delete
+					globaldirectory.entry[bucketindex]->dataItem[i].valid = 0;
+					globaldirectory.entry[bucketindex]->currentEntries-=1; // delete
 					int bucketKey = getCurrentHash(globaldirectory.entry[bucketindex]->dataItem[i].key, globaldirectory.globalDepth);
 					insertItem(temp ,currentBucket , globaldirectory); // insert the item in the new bucket
 				}
@@ -339,7 +344,7 @@ int createFirstTimeDirectory(GlobalDirectory& globaldirectory, Bucket& currentBu
 // return:   1 if succedded
 //			 0 if failed (when does it fail to expand??)
 // input:   Directory, hashKey(bucket index) at which the overflow occurs
-// Hint1:   don't forget todelete unneeded pointers to avoid memory leakage
+// Hint1:   don't forget to delete unneeded pointers to avoid memory leakage
 // Hint2:   what is the size of the new directory compared to old one? what is the new depth?
 // Hint3:   some entries will point to the same bucket
 int extendDirectory(GlobalDirectory &globaldirectory, int splitIndex) {
@@ -371,10 +376,11 @@ int extendDirectory(GlobalDirectory &globaldirectory, int splitIndex) {
 
     globaldirectory.entry= newDirectory;
     globaldirectory.length = newSize;
-
+	printf("SIZE NOW %d\n",globaldirectory.globalDepth);
 		for(int j =0 ;j < RECORDSPERBUCKET ; j++) {
 			DataItem temp = globaldirectory.entry[splitIndex]->dataItem[j];
 			globaldirectory.entry[splitIndex]->dataItem[j].valid = 0; // delete
+			globaldirectory.entry[splitIndex]->currentEntries-=1; // delete
 			Bucket dummyBucket ; 
 			int x = insertItem(temp ,dummyBucket ,globaldirectory)	;
 		} 
