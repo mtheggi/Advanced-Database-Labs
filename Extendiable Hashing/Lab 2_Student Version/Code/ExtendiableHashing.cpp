@@ -92,7 +92,7 @@ void displayDirectory(GlobalDirectory& globaldirectory, Bucket& currentBucket, i
 			if (verbose)
 				std::cout << "-----------------------------------------------\n\n";
 		}
-		//values.pop_back();
+		values.pop_back();
 		depths.pop_back();
 
 	}
@@ -129,7 +129,6 @@ int getCurrentHash(int key, int depth) {
 int insertItemIntoBucket(Bucket& currentBucket, DataItem data)
 {
 	if (currentBucket.currentEntries == RECORDSPERBUCKET){
-		puts("FULL");
 		return 0;
 	}
 		 

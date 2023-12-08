@@ -47,40 +47,57 @@ int main(){
   //1. Create Database file or Open it if it already exists, check readfile.cpp
    filehandle = createFile(FILESIZE,"openaddressing");
   //2. Display the database file, check openAddressing.cpp
-   DisplayFile(filehandle);
+  DisplayFile(filehandle);
 
-  
-  //3. Add some data in the table
-   insert(1, 20);
-   insert(2, 70);
-   insert(42, 80);
-   insert(4, 25);
-   insert(12, 44);
-   insert(14, 32);
-   insert(17, 11);
-   insert(13, 78);
-   insert(37, 97);
-   insert(11, 34);
-   insert(22, 730);
-   insert(46, 840);
-   insert(9, 83);
-   insert(21, 424);
-   insert(41, 115);
-   insert(71, 47);
-   insert(31, 92);
-   insert(73, 45);
+     DisplayFile(filehandle);
 
-   //4. Display the database file again
-   DisplayFile(filehandle);
-
-   //5. Search the database
    search(71);
+   search(73);
+   search(712);
+   search(100);
 
-   //6. delete an item from the database
    deleteItem(1);
+   deleteItem(12); 
+   deleteItem(13); 
+   deleteItem(11); 
+   deleteItem(122); 
+   deleteItem(11); 
 
-   //7. Display the final data base
+   insert(1, 20);
+   insert(1, 21);
+   insert(1, 22);
+   insert(1, 23);
+   insert(1, 24);
+   insert(1, 25);
+   insert(1, 26);
+   insert(1, 27);
+   insert(1, 28);
+   insert(1, 248);
+   insert(1, 29);
+   insert(1, 30);
+   insert(1, 40);
+   insert(1, 50);
+   insert(1, 60);
+   insert(1, 70);
+   insert(1, 80);
+   insert(1, 90);
+    
    DisplayFile(filehandle);
+
+   search(21);
+   search(20);
+   search(1);
+
+   deleteItem(1);
+   deleteItem(1);
+   deleteItem(1);
+   deleteItem(1);
+   
+
+
+
+   DisplayFile(filehandle);
+
 
    // And Finally don't forget to close the file.
    close(filehandle);
