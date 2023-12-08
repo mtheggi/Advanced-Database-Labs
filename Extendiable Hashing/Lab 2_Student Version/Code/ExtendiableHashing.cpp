@@ -199,8 +199,11 @@ int deleteItemFromBucket(Bucket& currentBucket, int key)
 void SplitBucket(GlobalDirectory& globaldirectory , int splitIndex){
 	int localdepth = globaldirectory.entry[splitIndex]->localDepth; // number of bits;  
 	int newlocaldepth = localdepth + 1;
+
 	globaldirectory.entry[splitIndex]->localDepth = newlocaldepth; // update the local depth of the bucket
+
 	int firstIndx = 0 ;
+
 	for (int bit  =0 ;bit < newlocaldepth; bit++) 
 		firstIndx = (firstIndx | (1<<bit & splitIndex)); // set the bit to 1
 	
@@ -209,6 +212,7 @@ void SplitBucket(GlobalDirectory& globaldirectory , int splitIndex){
 	for(int i = firstIndx;  i < globaldirectory.length ; i+=increments){
 		globaldirectory.entry[i] = newBucket;
 	}
+
 }
 
 
@@ -251,7 +255,7 @@ int insertItem(DataItem data, Bucket& currentBucket, GlobalDirectory& globaldire
 					globaldirectory.entry[bucketindex]->dataItem[i].valid = 0;
 					globaldirectory.entry[bucketindex]->currentEntries-=1; // delete
 					int bucketKey = getCurrentHash(globaldirectory.entry[bucketindex]->dataItem[i].key, globaldirectory.globalDepth);
-					insertItem(temp ,currentBucket , globaldirectory); // insert the item in the new bucket
+					int x = insertItem(temp ,currentBucket , globaldirectory); // insert the item in the new bucket
 				}
 				int newdataKey = getCurrentHash(data.key, globaldirectory.globalDepth);
 				return insertItem(data ,currentBucket , globaldirectory); // insert the item in the new bucket
