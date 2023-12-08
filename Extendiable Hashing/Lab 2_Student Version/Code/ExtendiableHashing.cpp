@@ -207,13 +207,26 @@ void SplitBucket(GlobalDirectory& globaldirectory , int splitIndex){
 	for (int bit  =0 ;bit < newlocaldepth; bit++) 
 		firstIndx = (firstIndx | (1<<bit & splitIndex)); // set the bit to 1
 	
+	Bucket oldBucket = *globaldirectory.entry[splitIndex]; // old bucket
+
+	for(auto  item: oldBucket.dataItem ) {
+		deleteItemFromBucket(*globaldirectory.entry[splitIndex] , item.key); 
+	}
+
 	Bucket * newBucket = new Bucket(newlocaldepth); 
 	int increments= 1<<(newlocaldepth); 
 	for(int i = firstIndx;  i < globaldirectory.length ; i+=increments){
 		globaldirectory.entry[i] = newBucket;
 	}
 
+	for(auto item: oldBucket.dataItem) {
+		Bucket dummyBucket ;
+		insertItem(item ,  dummyBucket, globaldirectory);
+	}
+
 }
+
+
 
 
 
@@ -250,13 +263,7 @@ int insertItem(DataItem data, Bucket& currentBucket, GlobalDirectory& globaldire
 		}
 		else { // splitting the bucket  
 				SplitBucket(globaldirectory, bucketindex);
-				for(int i =0 ;i < RECORDSPERBUCKET ; i++) {	
-					DataItem temp = globaldirectory.entry[bucketindex]->dataItem[i];
-					globaldirectory.entry[bucketindex]->dataItem[i].valid = 0;
-					globaldirectory.entry[bucketindex]->currentEntries-=1; // delete
-					int bucketKey = getCurrentHash(globaldirectory.entry[bucketindex]->dataItem[i].key, globaldirectory.globalDepth);
-					int x = insertItem(temp ,currentBucket , globaldirectory); // insert the item in the new bucket
-				}
+			
 				int newdataKey = getCurrentHash(data.key, globaldirectory.globalDepth);
 				return insertItem(data ,currentBucket , globaldirectory); // insert the item in the new bucket
 		}
