@@ -114,8 +114,9 @@ void displayDirectory(GlobalDirectory& globaldirectory, Bucket& currentBucket, i
 
 //Hashing function and getting directory Index, please don't change this function
 int getCurrentHash(int key, int depth) {
-	int hashedKey = (key & MAXKEYVALUE) >> (MAXKEYLENGTH - depth);
-		return hashedKey;
+	// int hashedKey = (key & MAXKEYVALUE) >> (MAXKEYLENGTH - depth);
+	int hashedkey =key & ((1<<depth)-1);	
+	return hashedkey;
 }
 
 //TODO1: Implement this function, Don't change the interface please
@@ -128,14 +129,13 @@ int getCurrentHash(int key, int depth) {
 int insertItemIntoBucket(Bucket& currentBucket, DataItem data)
 {
 	if (currentBucket.currentEntries == RECORDSPERBUCKET)
-		return 0; // split 
+		return 0; // can not insert because bucket is full i should split; 
 	else {
 
 		for (int i = 0; i < RECORDSPERBUCKET; i++) {
 			if (currentBucket.dataItem[i].valid == 0) {
-				data.valid = 1;
 				currentBucket.dataItem[i] = data;
-				currentBucket.currentEntries++;
+				currentBucket.currentEntries= currentBucket.currentEntries + 1 ;
 				return 1;
 			}
 		}
@@ -152,9 +152,8 @@ int insertItemIntoBucket(Bucket& currentBucket, DataItem data)
 void findItemInBucket(Bucket& currentBucket, int key)
 {
 	for ( int i =0 ;i < RECORDSPERBUCKET ; i++) {
-		if ( currentBucket.dataItem[i].valid && currentBucket.dataItem[i].key == key)
+		if ( currentBucket.dataItem[i].valid ==1  && currentBucket.dataItem[i].key == key)
 			{
-				
 				displayItem(&currentBucket.dataItem[i]);
 				return;
 			}
@@ -174,10 +173,10 @@ void findItemInBucket(Bucket& currentBucket, int key)
 int deleteItemFromBucket(Bucket& currentBucket, int key)
 {
 	for (int i = 0; i < RECORDSPERBUCKET ; i++) {
-		if (currentBucket.dataItem[i].valid && currentBucket.dataItem[i].key == key)
+		if (currentBucket.dataItem[i].valid == 1 && currentBucket.dataItem[i].key == key)
 		{
 			currentBucket.dataItem[i].valid = 0; // delete 
-			currentBucket.currentEntries--; // update currentEntries 
+			currentBucket.currentEntries= currentBucket.currentEntries - 1 ; // update currentEntries 
 			return 1; // success
 		}
 	}
@@ -194,6 +193,23 @@ int deleteItemFromBucket(Bucket& currentBucket, int key)
 // Hint1:   don't forget to check for corner cases, for example if several entries points to the same bucket and you are going to split it
 // Hint2:   a bucket could be split without expanding the directory (think when this will happen?)
 // Hint3:   don't forget to delete extra data
+
+void SplitBucket(GlobalDirectory& globaldirectory , int splitIndex){
+	int localdepth = globaldirectory.entry[splitIndex]->localDepth; // number of bits;  
+	int newlocaldepth = localdepth + 1;
+	globaldirectory.entry[splitIndex]->localDepth = newlocaldepth; // update the local depth of the bucket
+	int firstIndx = 0 ;
+	for (int bit  =0 ;bit < newlocaldepth; bit++) 
+		firstIndx = (firstIndx | (1<<bit & splitIndex)); // set the bit to 1
+	
+	Bucket * newBucket = new Bucket(newlocaldepth); 
+	int increments= 1<<(newlocaldepth); 
+	for(int i = firstIndx;  i < globaldirectory.length ; i+=increments){
+		globaldirectory.entry[i] = newBucket;
+	}
+}
+
+
 
 int insertItem(DataItem data, Bucket& currentBucket, GlobalDirectory& globaldirectory)
 {
@@ -214,49 +230,27 @@ int insertItem(DataItem data, Bucket& currentBucket, GlobalDirectory& globaldire
 		if (globaldirectory.entry[bucketindex]->localDepth == globaldirectory.globalDepth) {
 			int extendcount =0 ; 
 			extendDirectory(globaldirectory, bucketindex);
-			while(extendcount <=5 && insertItemIntoBucket(*globaldirectory.entry[bucketindex], data) == 0) {
-				extendDirectory(globaldirectory, bucketindex);
-				extendcount++;
-			}
-			if (extendcount > 5)
-				return 0;
-			else {
-				return 1; 
-			}
+			return insertItem(data, currentBucket , globaldirectory); 
+			// while(extendcount <=5 && insertItemIntoBucket(*globaldirectory.entry[bucketindex], data) == 0) {
+			// 	extendDirectory(globaldirectory, bucketindex);
+			// 	extendcount++;
+			// }
+			// if (extendcount > 5)
+			// 	return 0; // failed to insert 
+			// else {
+			// 	return 1; // success in inserting 
+			// }
 		}
-		else {
-			// cases : 
-			/*
-			This recursive call will attempt to insert the item into the appropriate bucket after the initial split. 
-			If the bucket is still full, it will trigger another split, and so on, until the item is inserted or the local depth becomes equal to the global depth.
-			At that point, if the item still can't be inserted, the directory will be extended.
-			*/				
-				int newBucketPosition = bucketindex + int(pow(2, globaldirectory.entry[bucketindex]->localDepth));
-				Bucket* newBucket = new Bucket(globaldirectory.entry[bucketindex]->localDepth + 1);
-				globaldirectory.entry[newBucketPosition] = newBucket;
-				globaldirectory.entry[bucketindex]->localDepth++; 
-
-				// Redistribute entries 
-
-				for(int i =0 ;i < RECORDSPERBUCKET ; i++){
-					// rehash entry with new local depth 
-					
-					int newhashindx = getCurrentHash(globaldirectory.entry[bucketindex]->dataItem[i].key ,globaldirectory.entry[bucketindex]->localDepth );
-					
-					DataItem tempData = globaldirectory.entry[bucketindex]->dataItem[i];
-					// delete it from the old bucket
-					globaldirectory.entry[bucketindex]->dataItem[i].valid =0; 
-					
-					Bucket& newHashBucket = *globaldirectory.entry[newhashindx];
-					insertItem(tempData , newHashBucket , globaldirectory );
+		else { // splitting the bucket  
+				SplitBucket(globaldirectory, bucketindex);
+				for(int i =0 ;i < RECORDSPERBUCKET ; i++) {	
+					DataItem temp = globaldirectory.entry[bucketindex]->dataItem[i];
+					globaldirectory.entry[bucketindex]->dataItem[i].valid = 0; // delete
+					int bucketKey = getCurrentHash(globaldirectory.entry[bucketindex]->dataItem[i].key, globaldirectory.globalDepth);
+					insertItem(temp ,currentBucket , globaldirectory); // insert the item in the new bucket
 				}
-
-				// insert the new data
-				int newdatahash = getCurrentHash(data.key , globaldirectory.entry[bucketindex]->localDepth);
-				Bucket& newDataHashBucket = *globaldirectory.entry[newdatahash];
-				insertItem(data , newDataHashBucket , globaldirectory);
-
-	
+				int newdataKey = getCurrentHash(data.key, globaldirectory.globalDepth);
+				return insertItem(data ,currentBucket , globaldirectory); // insert the item in the new bucket
 		}
 	}
 	else {
@@ -293,8 +287,26 @@ void searchItem(int key, Bucket& currentBucket, GlobalDirectory& globaldirectory
 // Hint4: You might want to loop on checkDirectoryMinimization, not just call it once to continue merging
 
 int deleteItem(int key, Bucket& currentBucket, GlobalDirectory& globaldirectory) {
+	if(globaldirectory.globalDepth==0){
+		if(deleteItemFromBucket(currentBucket,key)==1){
+			return 1;
+		}
+		else{
+			return 0;
+		}
+	}
+	else{
+		int HashedKey=getCurrentHash(key,globaldirectory.globalDepth); //get the new key
+		Bucket * CurrBucket=globaldirectory.entry[HashedKey];          //get bucket pointer
+		if(deleteItemFromBucket(*CurrBucket,key)==1){
+			checkDirectoryMinimization(globaldirectory);
+			return 1;
+		}
+		else{
+			return 0;
+		}
+	}
 	return 0;
-
 }
 
 
@@ -335,7 +347,7 @@ int extendDirectory(GlobalDirectory &globaldirectory, int splitIndex) {
     int newSize = oldSize * 2;
 
     // Create new directory with double size
-    Bucket** newDirectory = new Bucket*[newSize];
+    Bucket** newDirectory = new Bucket *[newSize];
 
     // Increase global depth
     globaldirectory.globalDepth++;
@@ -346,19 +358,26 @@ int extendDirectory(GlobalDirectory &globaldirectory, int splitIndex) {
             // Rehash with new global depth
 			globaldirectory.entry[i]->localDepth++;
             newDirectory[i] = globaldirectory.entry[i];
-            newDirectory[i + oldSize] = new Bucket(globaldirectory.globalDepth);
-        } else {
+            newDirectory[i + oldSize] = new Bucket(globaldirectory.globalDepth); 		
+
+		} else {
             // Keep the same bucket
             newDirectory[i] = globaldirectory.entry[i];
             newDirectory[i + oldSize] = globaldirectory.entry[i];
         }
     }
-
+	 delete [] globaldirectory.entry;
     // Update directory and size
+
     globaldirectory.entry= newDirectory;
     globaldirectory.length = newSize;
 
-	delete [] newDirectory;
+		for(int j =0 ;j < RECORDSPERBUCKET ; j++) {
+			DataItem temp = globaldirectory.entry[splitIndex]->dataItem[j];
+			globaldirectory.entry[splitIndex]->dataItem[j].valid = 0; // delete
+			Bucket dummyBucket ; 
+			int x = insertItem(temp ,dummyBucket ,globaldirectory)	;
+		} 
 
     return 1;
 }
