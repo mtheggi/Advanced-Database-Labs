@@ -1,0 +1,48 @@
+ DisplayFile(filehandle);
+
+   search(71);
+   search(73);
+   search(712);
+   search(100);
+
+   deleteItem(1);
+   deleteItem(12); 
+   deleteItem(13); 
+   deleteItem(11); 
+   deleteItem(122); 
+   deleteItem(11); 
+
+   insert(1, 20);
+   insert(1, 21);
+   insert(1, 22);
+   insert(1, 23);
+   insert(1, 24);
+   insert(1, 25);
+   insert(1, 26);
+   insert(1, 27);
+   insert(1, 28);
+   insert(1, 248);
+   insert(1, 29);
+   insert(1, 30);
+   insert(1, 40);
+   insert(1, 50);
+   insert(1, 60);
+   insert(1, 70);
+   insert(1, 80);
+   insert(1, 90);
+    
+   DisplayFile(filehandle);
+
+   search(21);
+   search(20);
+   search(1);
+
+   deleteItem(1);
+   deleteItem(1);
+   deleteItem(1);
+   deleteItem(1);
+   
+
+
+
+   DisplayFile(filehandle);
