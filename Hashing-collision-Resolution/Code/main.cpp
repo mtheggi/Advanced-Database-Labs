@@ -45,11 +45,12 @@ int main(){
 //here we create a sample test to read and write to our database file
 
   //1. Create Database file or Open it if it already exists, check readfile.cpp
-   filehandle = createFile(FILESIZE,"openaddressing");
+  // filehandle = createFile(FILESIZE,"openaddressing");
+   filehandle = createFile(FILESIZE,"chaining");
   //2. Display the database file, check openAddressing.cpp
-  DisplayFile(filehandle);
+   DisplayFile(filehandle);
 
-     DisplayFile(filehandle);
+   DisplayFile(filehandle);
 
    search(71);
    search(73);

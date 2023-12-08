@@ -42,7 +42,7 @@ int CreateExtraBucket(int fd)
     }
 }
 
-int insertItemChainig(int fd,DataItem item)
+int insertItem(int fd,DataItem item)
 {
    //TODO: implement this function
    	// printf ("Key: %d \n",item.key);
