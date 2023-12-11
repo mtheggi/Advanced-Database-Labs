@@ -6,15 +6,14 @@ Welcome to the repository for the Advanced Database course! This repository cont
 
 ### Lab 1: Hashing Collision Resolution Techniques
 
-In this lab, we explore various hashing collision resolution techniques. The goal is to understand how to handle collisions efficiently in hash tables. The code and documentation for this lab can be found in the [./lab1](./lab1) directory.
-
+In this lab, we explore various hashing collision resolution techniques. The goal is to understand how to handle collisions efficiently in hash tables.
 #### Features:
 - Implementation of common hashing collision resolution techniques.
 - Comparative analysis of techniques based on performance metrics.
 
 ### Lab 2: Extendable Hashing
 
-The second lab delves into extendable hashing, a dynamic hashing technique that allows for efficient dynamic file organization. Navigate to [./lab2](./lab2) to access the code and documentation.
+The second lab delves into extendable hashing, a dynamic hashing technique that allows for efficient dynamic file organization. 
 
 #### Features:
 - Implementation of extendable hashing.
@@ -22,7 +21,7 @@ The second lab delves into extendable hashing, a dynamic hashing technique that 
 
 ### Lab 3: NoSQL - MongoDB Lab
 
-Lab 3 introduces NoSQL databases, with a focus on MongoDB. The [./lab3](./lab3) directory contains code and documentation for working with MongoDB.
+Lab 3 introduces NoSQL databases, with a focus on MongoDB. 
 
 #### Features:
 - Connection setup and basic CRUD operations in MongoDB.
