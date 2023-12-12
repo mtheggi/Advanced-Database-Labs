@@ -3,16 +3,15 @@
 
 // conecting to the database
 db = connect('mongodb://localhost:27017/RestaurantsDB'); // Replace with your actual database URL
+// NOTE 
+// i imported the data with the name of the file provided "retaurants" not "restaurants" . 
+// so the collection name is "retaurants"
+// if you changed the collection name you should replace it in all queries 
 
 
 // task 1 
 // Import restaurants.json: the collection comprises of 3772 documents.
 // imported from the NOSQL manager using GUI 
-
-// NOTE 
-
-// make user that i imported the data with the name of the file provieded "retaurants" not "restaurants" . 
-// so the collection name is "retaurants"  
 
 // task 2
 //Write a MongoDB query to display all the documents in the collection restaurants.
